@@ -11,7 +11,7 @@ export interface RateLimitConfig {
 
 export interface PluginConfig {
   routerBaseUrl: string;
-  /** RUTOS's HTTPS admin/API listener uses a self-signed certificate by default - see `teltonika/client.ts`'s `INSECURE_AGENT`. Turn off only once the router has a certificate the local network actually trusts. */
+  /** RutOS's HTTPS admin/API listener uses a self-signed certificate by default - see `teltonika/client.ts`'s `INSECURE_AGENT`. Turn off only once the router has a certificate the local network actually trusts. */
   allowSelfSignedCert: boolean;
   username: string;
   password: string;
@@ -125,7 +125,7 @@ export function configSchema(modems: ModemStatusEntry[] = []): object {
         type: "string",
         title: "Router base URL",
         description:
-          "e.g. \"https://192.168.1.1\" - the RUTOS router's local address. Defaults to https, matching the router's own default " +
+          "e.g. \"https://192.168.1.1\" - the RutOS router's local address. Defaults to https, matching the router's own default " +
           'HTTPS-enabled admin/API listener - switch to a plain "http://..." URL only if that listener is disabled on your router.',
         default: defaults.routerBaseUrl,
       },
@@ -133,13 +133,13 @@ export function configSchema(modems: ModemStatusEntry[] = []): object {
         type: "boolean",
         title: "Allow the router's self-signed HTTPS certificate",
         description:
-          "RUTOS ships a self-signed certificate out of the box - leave this on unless you've replaced it with one your network trusts. Has no effect over a plain http:// URL.",
+          "RutOS ships a self-signed certificate out of the box - leave this on unless you've replaced it with one your network trusts. Has no effect over a plain http:// URL.",
         default: defaults.allowSelfSignedCert,
       },
       username: {
         type: "string",
         title: "Username",
-        description: "Preferably a non-root RUTOS user with ACL access to the messages API - see the README for how to create one.",
+        description: "Preferably a non-root RutOS user with ACL access to the messages API - see the README for how to create one.",
       },
       password: { type: "string", title: "Password" },
       modemId: {

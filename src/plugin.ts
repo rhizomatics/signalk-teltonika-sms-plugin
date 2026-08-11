@@ -121,7 +121,7 @@ export function createPlugin(app: ServerAPI): Plugin {
   const plugin: Plugin = {
     id: "signalk-teltonika-sms-plugin",
     name: "Teltonika SMS Notifications",
-    description: "Relays SignalK notifications as SMS via a Teltonika router's RUTOS API",
+    description: "Relays SignalK notifications as SMS via a Teltonika router's RutOS API",
     schema: () => configSchema(cachedModemStatus),
     uiSchema: () => configUiSchema(),
 

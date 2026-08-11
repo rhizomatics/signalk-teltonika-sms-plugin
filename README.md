@@ -2,7 +2,7 @@
 
 Relays [SignalK notifications](https://signalk.org/specification/1.8.2/doc/notifications.html)
 (e.g. an anchor watch alert) as SMS via a Teltonika router's
-[RUTOS REST API](https://developers.teltonika-networks.com/reference/rut956/7.24.1/v1.16/messages#post-messages-actions-send) -
+[RutOS REST API](https://developers.teltonika-networks.com/reference/rut956/7.24.1/v1.16/messages#post-messages-actions-send) -
 useful when the boat has no other way to reach you (no internet, generator/battery notifications while ashore, etc).
 
 ## How it works
@@ -28,11 +28,11 @@ useful when the boat has no other way to reach you (no internet, generator/batte
 
 ## Setup
 
-### 1. Create a non-root RUTOS user
+### 1. Create a non-root RutOS user
 
 Root credentials (the `admin` user) work but should be avoided if possible - create a dedicated user or re-use an existing SignalK user:
 
-1. RUTOS web UI: **System -> Administration -> Users -> Add**.
+1. RutOS web UI: **System -> Administration -> Users -> Add**.
 2. On that user's **Permissions** tab, confirmed by testing: grant either write access to **All Pages**, or specifically write access to the **Services -> Mobile Utilities -> Messages -> Send**
    and **Services -> Mobile Utilities -> Messages -> Storage** permission pages. No separate
    API-level ACL call is needed - it's just these two checkboxes in the UI.
@@ -45,8 +45,8 @@ In the SignalK admin UI, under this plugin's config:
 
 | Field                            | Notes                                                                                                                                                                                                                                                                                                            |
 | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Router base URL                  | Defaults to `https://192.168.1.1`, matching RUTOS's own default HTTPS listener. Use a plain `http://...` URL only if that listener is disabled on your router.                                                                                                                                                   |
-| Allow self-signed cert           | On by default - RUTOS ships a self-signed HTTPS certificate out of the box.                                                                                                                                                                                                                                      |
+| Router base URL                  | Defaults to `https://192.168.1.1`, matching RutOS's own default HTTPS listener. Use a plain `http://...` URL only if that listener is disabled on your router.                                                                                                                                                   |
+| Allow self-signed cert           | On by default - RutOS ships a self-signed HTTPS certificate out of the box.                                                                                                                                                                                                                                      |
 | Username / Password              | The non-root user from step 1.                                                                                                                                                                                                                                                                                   |
 | SMS modem                        | Leave blank to auto-pick on plugin start (and save it back here): the only modem if there's just one, otherwise the first (alphabetically) with a SIM inserted. Each option is shown as `modem_id (modem_type)`, e.g. `1-1 (Quectel EC25)`. Tick "Refresh modem list on start" if the list looks empty or stale. |
 | Recipient phone numbers          | International format only, e.g. `+447123456789` - not a local/national number.                                                                                                                                                                                                                                   |

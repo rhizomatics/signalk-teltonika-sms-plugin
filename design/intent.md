@@ -2,7 +2,7 @@
 
 ## Intent
 
-Deliver SignalK notifications via a Teltonika router using the RUTOS API for example to receive an anchor watch alert.
+Deliver SignalK notifications via a Teltonika router using the RutOS API for example to receive an anchor watch alert.
 
 Notifications can be selected inclusively or exclusively by a list of SignalK data path regular expressions, by priority or globally.
 
@@ -25,7 +25,7 @@ Failed SMS will be retried for a configurable number of times after a configurab
 - If left blank, the "SMS modem" config field is auto-picked on plugin start and saved back: the only modem if there's just one, otherwise the alphabetically-first modem with a SIM actually inserted - avoids the field sitting empty until the user manually revisits the config after their first successful login
 - The modem dropdown shows each modem's `modem_type` in brackets after its id, to make the choice easier to understand
 - Session login is used, using `/api/login` for first call or if subsequent call has an expired token
-- Root usage is discouraged - the plugin documentation explains how to create a non-root user in the RUTOS UI. Confirmed by testing: the user needs either write access to all pages, or specifically write access to the `Services / Mobile Utilities / Messages / Send` and `Services / Mobile Utilities / Messages / Storage` permission pages (set on the user's Permissions tab in the RUTOS UI) - no separate API-level ACL call is needed
+- Root usage is discouraged - the plugin documentation explains how to create a non-root user in the RutOS UI. Confirmed by testing: the user needs either write access to all pages, or specifically write access to the `Services / Mobile Utilities / Messages / Send` and `Services / Mobile Utilities / Messages / Storage` permission pages (set on the user's Permissions tab in the RutOS UI) - no separate API-level ACL call is needed
 - App Icon created, stylized SMS chat bubble
 
 ## Roadmap

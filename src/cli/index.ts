@@ -5,7 +5,7 @@ import { requireE164PhoneNumber } from "../phoneNumber";
 import { logDebug, setLogLevel } from "./log";
 
 export const program = new Command();
-program.name("teltonika-sms-cli").description("Local CLI for testing the Teltonika RUTOS SMS API without a running SignalK server");
+program.name("teltonika-sms-cli").description("Local CLI for testing the Teltonika RutOS SMS API without a running SignalK server");
 
 program.option("-l, --log-level <level>", "log verbosity: info or debug (e.g. trace which URLs are fetched)", "info");
 program.hook("preAction", () => {
@@ -14,13 +14,13 @@ program.hook("preAction", () => {
 
 function routerOptions(cmd: Command): Command {
   return cmd
-    .requiredOption("-u, --router-url <url>", 'RUTOS router base URL, e.g. "https://192.168.1.1"')
+    .requiredOption("-u, --router-url <url>", 'RutOS router base URL, e.g. "https://192.168.1.1"')
     .requiredOption(
       "--user <username>",
-      "preferably a non-root RUTOS user with ACL access to the messages API - see the README, or `acl` below",
+      "preferably a non-root RutOS user with ACL access to the messages API - see the README, or `acl` below",
     )
-    .option("--password <password>", "RUTOS password - prefer $TELTONIKA_SMS_PASSWORD instead, so it isn't left in shell history")
-    .option("--no-insecure", "reject the router's certificate instead of allowing a self-signed one (RUTOS's default)");
+    .option("--password <password>", "RutOS password - prefer $TELTONIKA_SMS_PASSWORD instead, so it isn't left in shell history")
+    .option("--no-insecure", "reject the router's certificate instead of allowing a self-signed one (RutOS's default)");
 }
 
 function resolvePassword(opts: { password?: string }): string {
@@ -93,12 +93,12 @@ routerOptions(
 
 program
   .command("acl")
-  .description("Print the steps to grant a non-root RUTOS user SMS API access")
+  .description("Print the steps to grant a non-root RutOS user SMS API access")
   .argument("<username>", "the non-root username you're granting access to")
   .action((username: string) => {
     console.log(
       [
-        `1. RUTOS web UI: System -> Administration -> Users -> Add (if "${username}" doesn't exist yet).`,
+        `1. RutOS web UI: System -> Administration -> Users -> Add (if "${username}" doesn't exist yet).`,
         "",
         `2. On "${username}"'s Permissions tab, confirmed by testing: grant either write access to all`,
         "   pages, or specifically write access to just these two permission pages:",

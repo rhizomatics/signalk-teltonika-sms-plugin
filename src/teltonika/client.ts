@@ -9,7 +9,7 @@ import {
 } from "./types";
 
 /**
- * RUTOS ships its HTTPS admin/API listener with a self-signed certificate by default - the
+ * RutOS ships its HTTPS admin/API listener with a self-signed certificate by default - the
  * working curl examples confirmed against a real router (see `./types.ts`'s doc comment) all use
  * `-k` to skip verification. `allowSelfSignedCert` (default `true` - see `defaultConfig` in
  * `../config.ts`) reproduces that with a dedicated `undici.Agent`, shared across every request
@@ -86,7 +86,7 @@ export interface TeltonikaClientConfig {
   baseUrl: string;
   username: string;
   password: string;
-  /** See `INSECURE_AGENT`'s doc comment above - default `true` (see `defaultConfig` in `../config.ts`) since RUTOS's own HTTPS listener is self-signed out of the box. */
+  /** See `INSECURE_AGENT`'s doc comment above - default `true` (see `defaultConfig` in `../config.ts`) since RutOS's own HTTPS listener is self-signed out of the box. */
   allowSelfSignedCert: boolean;
 }
 
@@ -99,7 +99,7 @@ interface Session {
 const REAUTH_SAFETY_MARGIN_MS = 15_000;
 
 /**
- * RUTOS REST API client - session login (`/api/login`), modem status (`/api/messages/storage/status`),
+ * RutOS REST API client - session login (`/api/login`), modem status (`/api/messages/storage/status`),
  * and sending SMS (`/api/messages/actions/send`). See `./types.ts`'s doc comment for how these
  * shapes were confirmed.
  */
