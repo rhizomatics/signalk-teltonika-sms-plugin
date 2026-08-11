@@ -111,7 +111,7 @@ export function configSchema(modemIds: string[] = []): object {
       username: {
         type: "string",
         title: "Username",
-        description: "A non-root RUTOS user with ACL access to the messages API - see the README for how to create one.",
+        description: "Preferably a non-root RUTOS user with ACL access to the messages API - see the README for how to create one.",
       },
       password: { type: "string", title: "Password" },
       modemId: {

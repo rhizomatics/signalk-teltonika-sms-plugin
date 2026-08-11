@@ -15,7 +15,10 @@ program.hook("preAction", () => {
 function routerOptions(cmd: Command): Command {
   return cmd
     .requiredOption("-u, --router-url <url>", 'RUTOS router base URL, e.g. "https://192.168.1.1"')
-    .requiredOption("--user <username>", "a non-root RUTOS user with ACL access to the messages API - see the README, or `acl` below")
+    .requiredOption(
+      "--user <username>",
+      "preferably a non-root RUTOS user with ACL access to the messages API - see the README, or `acl` below",
+    )
     .option("--password <password>", "RUTOS password - prefer $TELTONIKA_SMS_PASSWORD instead, so it isn't left in shell history")
     .option("--no-insecure", "reject the router's certificate instead of allowing a self-signed one (RUTOS's default)");
 }
