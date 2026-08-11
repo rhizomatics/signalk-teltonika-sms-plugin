@@ -48,7 +48,7 @@ In the SignalK admin UI, under this plugin's config:
 | Router base URL                  | Defaults to `https://192.168.1.1`, matching RUTOS's own default HTTPS listener. Use a plain `http://...` URL only if that listener is disabled on your router.                           |
 | Allow self-signed cert           | On by default - RUTOS ships a self-signed HTTPS certificate out of the box.                                                                                                              |
 | Username / Password              | The non-root user from step 1.                                                                                                                                                           |
-| SMS modem                        | Populated from the router once fetched - tick "Refresh modem list on start" if empty.                                                                                                    |
+| SMS modem                        | Populated from the router once fetched - tick "Refresh modem list on start" if empty. Or ignore and leave to auto-populate if only one SIM                                               |
 | Recipient phone numbers          | International format only, e.g. `+447123456789` - not a local/national number.                                                                                                           |
 | Send a confirmation test message | Tick, save, and restart the plugin to text every recipient a one-off "it works" message. Clears itself automatically once that send succeeds - if it stays ticked, check the plugin log. |
 

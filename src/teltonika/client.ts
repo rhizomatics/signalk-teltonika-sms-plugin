@@ -1,5 +1,12 @@
 import { Agent, fetch } from "undici";
-import { LoginResponse, MessagesStorageConfigResponse, SendSmsResponse, TeltonikaApiError, TeltonikaApiErrorEntry } from "./types";
+import {
+  LoginResponse,
+  MessagesStorageStatusResponse,
+  ModemStatusEntry,
+  SendSmsResponse,
+  TeltonikaApiError,
+  TeltonikaApiErrorEntry,
+} from "./types";
 
 /**
  * RUTOS ships its HTTPS admin/API listener with a self-signed certificate by default - the
@@ -92,13 +99,13 @@ interface Session {
 const REAUTH_SAFETY_MARGIN_MS = 15_000;
 
 /**
- * RUTOS REST API client - session login (`/api/login`), the SMS-capable modem id list
- * (`/api/messages/storage/config`), and sending SMS (`/api/messages/actions/send`). See
- * `./types.ts`'s doc comment for how these shapes were confirmed.
+ * RUTOS REST API client - session login (`/api/login`), modem status (`/api/messages/storage/status`),
+ * and sending SMS (`/api/messages/actions/send`). See `./types.ts`'s doc comment for how these
+ * shapes were confirmed.
  */
 export class TeltonikaClient {
   private session: Session | undefined;
-  private cachedModemIds: string[] | undefined;
+  private cachedModemStatus: ModemStatusEntry[] | undefined;
 
   constructor(
     private readonly config: TeltonikaClientConfig,
@@ -146,23 +153,22 @@ export class TeltonikaClient {
     }
   }
 
-  /** The unparsed `/api/messages/storage/config` response - lets `teltonika-sms-cli modems --raw` show what a real router actually sends, to sanity-check `getModemIds`'s `modem_id` extraction against firmware this wasn't verified against (see `./types.ts`'s doc comment). */
-  async getRawModemConfig(): Promise<unknown> {
-    return this.authorized<unknown>("/api/messages/storage/config", "GET");
+  /** The unparsed `/api/messages/storage/status` response - lets `teltonika-sms-cli modems --raw` show what a real router actually sends, to sanity-check `getModemStatus`'s extraction against firmware this wasn't independently verified against (see `./types.ts`'s doc comment). */
+  async getRawModemStatus(): Promise<unknown> {
+    return this.authorized<unknown>("/api/messages/storage/status", "GET");
   }
 
   /** Cached after the first successful fetch; pass `refresh: true` to bypass the cache and re-fetch from the router. */
-  async getModemIds(opts: { refresh?: boolean } = {}): Promise<string[]> {
-    if (!opts.refresh && this.cachedModemIds) {
-      return this.cachedModemIds;
+  async getModemStatus(opts: { refresh?: boolean } = {}): Promise<ModemStatusEntry[]> {
+    if (!opts.refresh && this.cachedModemStatus) {
+      return this.cachedModemStatus;
     }
-    const response = await this.authorized<MessagesStorageConfigResponse>("/api/messages/storage/config", "GET");
+    const response = await this.authorized<MessagesStorageStatusResponse>("/api/messages/storage/status", "GET");
     if (!response.success || !response.data) {
-      throw new TeltonikaApiError(`fetching modem list failed: ${describeErrors(response.errors)}`, 200, response);
+      throw new TeltonikaApiError(`fetching modem status failed: ${describeErrors(response.errors)}`, 200, response);
     }
-    const ids = response.data.map((entry) => entry.modem_id).filter((id): id is string => typeof id === "string");
-    this.cachedModemIds = [...new Set(ids)];
-    return this.cachedModemIds;
+    this.cachedModemStatus = response.data.filter((entry) => typeof entry.modem_id === "string");
+    return this.cachedModemStatus;
   }
 
   async sendSms(modemId: string, number: string, message: string): Promise<void> {

@@ -19,13 +19,22 @@ export interface TeltonikaApiErrorEntry {
 }
 
 /**
- * `GET /api/messages/storage/config` - per design/intent.md, each entry carries a `modem_id`
- * field. Kept as `Record<string, unknown>` beyond that one confirmed field since the rest of the
- * entry's shape isn't verified - see `getModemIds` in `client.ts`.
+ * `GET /api/messages/storage/status` - one entry per modem, confirmed by testing against real
+ * hardware: `modem_id` (e.g. `"1-1"`), `sim_inserted` (truthy when a SIM is actually present in
+ * that slot), and `modem_type` (a human-readable model string, e.g. used to label the config
+ * dropdown - see `modemLabel` in `../modemSelection.ts`). Used instead of
+ * `/api/messages/storage/config` specifically because `sim_inserted` isn't available there, and
+ * is needed to auto-pick a sensible default modem - see `chooseDefaultModemId`.
  */
-export interface MessagesStorageConfigResponse {
+export interface ModemStatusEntry {
+  modem_id: string;
+  sim_inserted?: number | string | boolean;
+  modem_type?: string;
+}
+
+export interface MessagesStorageStatusResponse {
   success: boolean;
-  data?: Record<string, unknown>[];
+  data?: ModemStatusEntry[];
   errors?: TeltonikaApiErrorEntry[];
 }
 

@@ -1,5 +1,7 @@
 import { ALARM_STATE, ServerAPI } from "@signalk/server-api";
 import { E164_PATTERN } from "./phoneNumber";
+import { modemLabel } from "./modemSelection";
+import { ModemStatusEntry } from "./teltonika/types";
 
 export interface RateLimitConfig {
   maxMessages: number;
@@ -13,7 +15,14 @@ export interface PluginConfig {
   allowSelfSignedCert: boolean;
   username: string;
   password: string;
-  /** One of the router's `modem_id` values, from `GET /api/messages/storage/config` - see `teltonika/client.ts`. Populated as a dropdown once at least one successful fetch/refresh has happened. */
+  /**
+   * One of the router's `modem_id` values, from `GET /api/messages/storage/status` - see
+   * `teltonika/client.ts`. Populated as a dropdown once at least one successful fetch/refresh has
+   * happened. Auto-picked and saved back here on plugin start whenever left blank - see
+   * `chooseDefaultModemId` in `modemSelection.ts` and its call site in `plugin.ts` - so the field
+   * doesn't sit empty just because the router wasn't reachable yet the first time the config form
+   * was opened (before any credentials were entered and saved).
+   */
   modemId: string;
   /** Refetch the modem id list from the router on plugin start, instead of relying on the cache written by a previous fetch/refresh. */
   refreshModemsOnStart: boolean;
@@ -77,16 +86,35 @@ export function clearSendTestMessage(app: ServerAPI): void {
   });
 }
 
-const PRIORITY_VALUES = [
-  ALARM_STATE.nominal,
-  ALARM_STATE.normal,
-  ALARM_STATE.alert,
-  ALARM_STATE.warn,
-  ALARM_STATE.alarm,
-  ALARM_STATE.emergency,
-];
+/**
+ * Persists an auto-picked `modemId` (see `chooseDefaultModemId` in `./modemSelection.ts`) back to
+ * disk, same read-modify-write shape as `clearSendTestMessage` above - so the admin UI shows the
+ * picked modem on its next load instead of an empty field, and so this only runs once rather than
+ * re-picking (and potentially re-saving a different modem, e.g. after a SIM swap) on every start.
+ * Awaited (unlike `clearSendTestMessage`) so callers can rely on the write having landed before
+ * reading the config again later in the same startup sequence.
+ */
+export function persistModemId(app: ServerAPI, modemId: string): Promise<void> {
+  const current = { ...defaultConfig(), ...readCurrentConfig(app) };
+  return new Promise((resolve) => {
+    app.savePluginOptions({ ...current, modemId }, (err) => {
+      if (err) app.debug(`failed to persist auto-selected modemId: ${err.message}`);
+      resolve();
+    });
+  });
+}
 
-export function configSchema(modemIds: string[] = []): object {
+/**
+ * A fresh array per call, deliberately - `minPriority` and `rateLimit.bypassPriority` below both
+ * need this same enum list, but the schema is serialized to JSON for storage, and a shared array
+ * *reference* used in two places in the object tree reads as a circular reference to a
+ * flat-visited-set cycle checker (CI's `schema check`) even though it isn't actually one.
+ */
+function priorityValues(): ALARM_STATE[] {
+  return [ALARM_STATE.nominal, ALARM_STATE.normal, ALARM_STATE.alert, ALARM_STATE.warn, ALARM_STATE.alarm, ALARM_STATE.emergency];
+}
+
+export function configSchema(modems: ModemStatusEntry[] = []): object {
   const defaults = defaultConfig();
 
   return {
@@ -118,8 +146,10 @@ export function configSchema(modemIds: string[] = []): object {
         type: "string",
         title: "SMS modem",
         description:
-          'Refreshed from the router\'s "/api/messages/storage/config" - tick "Refresh modem list on start" below if this is empty or stale.',
-        ...(modemIds.length > 0 ? { enum: modemIds } : {}),
+          "Id like `1-1`, shown with its modem type in brackets below once known. Auto-picked on plugin start if left blank - the " +
+          "only modem if there's just one, otherwise the first (alphabetically) with a SIM inserted. Refreshed from the router's " +
+          'API - tick "Refresh modem list on start" below if this is empty or stale.',
+        ...(modems.length > 0 ? { enum: modems.map((modem) => modem.modem_id), enumNames: modems.map(modemLabel) } : {}),
       },
       refreshModemsOnStart: {
         type: "boolean",
@@ -138,7 +168,7 @@ export function configSchema(modemIds: string[] = []): object {
         type: "string",
         title: "Minimum priority",
         description: "Only notifications at or above this SignalK alarm state are relayed as SMS.",
-        enum: PRIORITY_VALUES,
+        enum: priorityValues(),
         default: defaults.minPriority,
       },
       includePatterns: {
@@ -196,7 +226,7 @@ export function configSchema(modemIds: string[] = []): object {
             title: "Bypass the limit at/above this priority",
             description:
               "A notification at or above this priority always sends, even with the window exhausted - e.g. an anchor-drag emergency shouldn't be silently dropped because earlier chatter used up the quota.",
-            enum: PRIORITY_VALUES,
+            enum: priorityValues(),
             default: defaults.rateLimit.bypassPriority,
           },
         },

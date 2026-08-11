@@ -4,6 +4,7 @@ import { ALARM_STATE } from "@signalk/server-api";
 import { SmsSender } from "./smsSender";
 import { RateLimiter } from "./rateLimiter";
 import { TeltonikaClient } from "./teltonika/client";
+import { TeltonikaApiError } from "./teltonika/types";
 
 function fakeLogger() {
   const debug: string[] = [];
@@ -123,6 +124,71 @@ test("skips a locally-formatted recipient number without calling sendSms for it"
   const ok = await sender.enqueue({ priority: ALARM_STATE.alert, text: "hi", label: "test" });
   assert.equal(ok, false);
   assert.deepEqual(sentTo, ["+447987654321"]);
+});
+
+test("does not retry a 422 response, and reports it as not confirmed sent", async () => {
+  let attempts = 0;
+  const client = fakeClient(async () => {
+    attempts++;
+    throw new TeltonikaApiError("POST .../actions/send failed (422)", 422, { success: false });
+  });
+  const rateLimiter = new RateLimiter({ maxMessages: 10, windowMinutes: 60, bypassPriority: ALARM_STATE.alarm });
+  const logger = fakeLogger();
+  const sender = new SmsSender(
+    client,
+    rateLimiter,
+    { modemId: "1-1", recipients: ["+447123456789"], retryCount: 3, retryPauseSeconds: 1 },
+    logger,
+    noSleep,
+  );
+
+  const ok = await sender.enqueue({ priority: ALARM_STATE.alert, text: "hi", label: "test" });
+  assert.equal(ok, false);
+  assert.equal(attempts, 1, "a 422 should not be retried");
+  assert.ok(logger.error$.some((m) => m.includes("422") && m.includes("may be delayed")));
+});
+
+test("stop() aborts a pending retry wait instead of sending a delayed duplicate", async () => {
+  let attempts = 0;
+  let resolveSleep: (() => void) | undefined;
+  const sender = new SmsSender(
+    fakeClient(async () => {
+      attempts++;
+      throw new Error("transient");
+    }),
+    new RateLimiter({ maxMessages: 10, windowMinutes: 60, bypassPriority: ALARM_STATE.alarm }),
+    { modemId: "1-1", recipients: ["+447123456789"], retryCount: 3, retryPauseSeconds: 1 },
+    fakeLogger(),
+    () => new Promise<void>((resolve) => (resolveSleep = resolve)),
+  );
+
+  const result = sender.enqueue({ priority: ALARM_STATE.alert, text: "hi", label: "test" });
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(attempts, 1, "first attempt should have run before the retry sleep");
+
+  sender.stop();
+  resolveSleep?.();
+  const ok = await result;
+  assert.equal(ok, false);
+  assert.equal(attempts, 1, "no further attempt should run once stopped");
+});
+
+test("stop() makes further enqueue calls no-ops", async () => {
+  let calls = 0;
+  const sender = new SmsSender(
+    fakeClient(async () => {
+      calls++;
+    }),
+    new RateLimiter({ maxMessages: 10, windowMinutes: 60, bypassPriority: ALARM_STATE.alarm }),
+    { modemId: "1-1", recipients: ["+447123456789"], retryCount: 1, retryPauseSeconds: 1 },
+    fakeLogger(),
+    noSleep,
+  );
+
+  sender.stop();
+  const ok = await sender.enqueue({ priority: ALARM_STATE.alert, text: "hi", label: "test" });
+  assert.equal(ok, false);
+  assert.equal(calls, 0);
 });
 
 test("processes enqueued jobs sequentially, in order", async () => {
