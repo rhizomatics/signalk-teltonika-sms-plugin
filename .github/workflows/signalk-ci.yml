@@ -1,0 +1,14 @@
+name: SignalK Plugin CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test:
+    uses: SignalK/signalk-server/.github/workflows/plugin-ci.yml@master
+    with:
+      coverage-command: npm run coverage
+      format-check-command: npm run fmt:check
