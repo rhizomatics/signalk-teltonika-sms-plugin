@@ -45,7 +45,7 @@
     "lint": "oxlint"
   },
   "dependencies": {
-    "commander": "^12.1.0",
+    "commander": "^15.0.0",
     "undici": "^6.19.0"
   },
   "devDependencies": {
