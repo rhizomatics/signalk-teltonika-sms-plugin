@@ -119,7 +119,7 @@ export function configSchema(modems: ModemStatusEntry[] = []): object {
 
   return {
     type: "object",
-    required: ["routerBaseUrl", "username", "password", "modemId"],
+    required: ["routerBaseUrl", "username", "password"],
     properties: {
       routerBaseUrl: {
         type: "string",

@@ -59,7 +59,7 @@ test("login posts credentials and caches the returned token/expiry", async () =>
   );
 });
 
-test("getModemIds logs in once, sends the bearer token, and caches results until refresh", async () => {
+test("getModemStatus logs in once, sends the bearer token, and caches results until refresh", async () => {
   let loginRequests = 0;
   let modemRequests = 0;
   await withServer(
@@ -69,25 +69,34 @@ test("getModemIds logs in once, sends the bearer token, and caches results until
         respondJson(res, 200, { success: true, data: { username: "user", token: "tok-1", expires: 299 } });
         return;
       }
-      if (req.method === "GET" && req.url === "/api/messages/storage/config") {
+      if (req.method === "GET" && req.url === "/api/messages/storage/status") {
         modemRequests++;
         assert.equal(req.headers.authorization, "Bearer tok-1");
-        respondJson(res, 200, { success: true, data: [{ modem_id: "1-1" }, { modem_id: "3-1" }, { modem_id: "1-1" }] });
+        respondJson(res, 200, {
+          success: true,
+          data: [
+            { modem_id: "1-1", sim_inserted: 1, modem_type: "Quectel EC25" },
+            { modem_id: "3-1", sim_inserted: 0, modem_type: "Quectel EC25" },
+          ],
+        });
         return;
       }
       respondJson(res, 404, { success: false });
     },
     async (baseUrl) => {
       const client = new TeltonikaClient({ baseUrl, username: "user", password: "pass", allowSelfSignedCert: false });
-      const ids = await client.getModemIds();
-      assert.deepEqual(ids, ["1-1", "3-1"]);
+      const modems = await client.getModemStatus();
+      assert.deepEqual(
+        modems.map((m) => m.modem_id),
+        ["1-1", "3-1"],
+      );
       assert.equal(loginRequests, 1);
       assert.equal(modemRequests, 1);
 
-      await client.getModemIds();
+      await client.getModemStatus();
       assert.equal(modemRequests, 1, "second call should use the cache");
 
-      await client.getModemIds({ refresh: true });
+      await client.getModemStatus({ refresh: true });
       assert.equal(modemRequests, 2, "refresh:true should bypass the cache");
     },
   );
@@ -179,19 +188,19 @@ test("re-logs in once the cached token's reported expiry has passed", async () =
         respondJson(res, 200, { success: true, data: { username: "user", token: `tok-${loginRequests}`, expires: 60 } });
         return;
       }
-      if (req.method === "GET" && req.url === "/api/messages/storage/config") {
-        respondJson(res, 200, { success: true, data: [{ modem_id: "1-1" }] });
+      if (req.method === "GET" && req.url === "/api/messages/storage/status") {
+        respondJson(res, 200, { success: true, data: [{ modem_id: "1-1", sim_inserted: 1 }] });
         return;
       }
       respondJson(res, 404, { success: false });
     },
     async (baseUrl) => {
       const client = new TeltonikaClient({ baseUrl, username: "user", password: "pass", allowSelfSignedCert: false }, () => now);
-      await client.getModemIds({ refresh: true });
+      await client.getModemStatus({ refresh: true });
       assert.equal(loginRequests, 1);
 
       now += 61_000;
-      await client.getModemIds({ refresh: true });
+      await client.getModemStatus({ refresh: true });
       assert.equal(loginRequests, 2);
     },
   );

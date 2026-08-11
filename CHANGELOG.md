@@ -4,9 +4,11 @@
 
 - Improved logging for messsage send
 - Specific handling for Teltonika odd 422 status when SMS can't be sent immediately
-- Auto default the Modem ID
+- Auto default the Modem ID, and show the Modem Type in dialog
 - Fix cancellation of retry loop
 - Help messages clarified
+- CI build fix
+- Dependencies updated
 
 ## 0.1.0
 

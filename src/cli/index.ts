@@ -49,27 +49,31 @@ routerOptions(program.command("login").description("Test credentials against the
   },
 );
 
-routerOptions(program.command("modems").description('List SMS-capable modem ids from "/api/messages/storage/config"'))
+routerOptions(program.command("modems").description('List modem status from "/api/messages/storage/status"'))
   .option(
     "--refresh",
     "bypass any cache and fetch fresh from the router (this CLI process has no cache anyway, but mirrors the plugin's own flag)",
   )
   .option(
     "--raw",
-    "print the router's raw JSON response instead of just the extracted modem_id list - useful to sanity-check the response shape against your firmware",
+    "print the router's raw JSON response instead of the extracted table - useful to sanity-check the response shape against your firmware",
   )
   .action(async (opts) => {
     const client = makeClient(opts);
     if (opts.raw) {
-      console.log(JSON.stringify(await client.getRawModemConfig(), undefined, 2));
+      console.log(JSON.stringify(await client.getRawModemStatus(), undefined, 2));
       return;
     }
-    const modemIds = await client.getModemIds({ refresh: Boolean(opts.refresh) });
-    if (modemIds.length === 0) {
-      console.log("no modem ids found - try `modems --raw` to inspect the router's raw response");
+    const modems = await client.getModemStatus({ refresh: Boolean(opts.refresh) });
+    if (modems.length === 0) {
+      console.log("no modems found - try `modems --raw` to inspect the router's raw response");
       return;
     }
-    modemIds.forEach((id) => console.log(id));
+    const header = ["modem_id", "modem_type", "sim_inserted"];
+    console.log(header.join("\t"));
+    for (const modem of modems) {
+      console.log([modem.modem_id, modem.modem_type ?? "", String(modem.sim_inserted ?? "")].join("\t"));
+    }
   });
 
 routerOptions(

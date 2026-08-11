@@ -26,7 +26,7 @@ function findTestFiles(dir) {
 const coverage = process.argv.includes("--coverage");
 const testFiles = findTestFiles(path.join(rootDir, "src"));
 
-const args = ["--require", "ts-node/register"];
+const args = ["--import", "tsx"];
 if (coverage) {
   mkdirSync(path.join(rootDir, "coverage"), { recursive: true });
   args.push(

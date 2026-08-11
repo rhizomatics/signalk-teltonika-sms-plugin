@@ -36,7 +36,7 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch",
-    "cli": "ts-node src/cli/index.ts",
+    "cli": "tsx src/cli/index.ts",
     "test": "node scripts/run-tests.js",
     "coverage": "node scripts/run-tests.js --coverage",
     "prepublishOnly": "npm run build",
@@ -45,17 +45,17 @@
     "lint": "oxlint"
   },
   "dependencies": {
-    "commander": "^12.1.0",
-    "undici": "^6.19.0"
+    "commander": "^15.0.0",
+    "undici": "^8.10.0"
   },
   "devDependencies": {
     "@signalk/server-api": "^2.28.0",
-    "@types/node": "^20.14.0",
-    "oxfmt": "^0.59.0",
+    "@types/node": "^26.2.0",
+    "oxfmt": "^0.62.0",
     "oxlint": "^1.74.0",
     "oxlint-tsgolint": "^7.0.0",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.5.0"
+    "tsx": "^4.23.0",
+    "typescript": "^7.0.2"
   },
   "engines": {
     "node": ">=18"
