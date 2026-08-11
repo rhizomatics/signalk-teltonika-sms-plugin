@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1
+
+- Minor UI tidy up
+
 ## 0.2.0
 
 - Improved logging for messsage send

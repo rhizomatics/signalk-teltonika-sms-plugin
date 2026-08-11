@@ -131,7 +131,7 @@ export function configSchema(modems: ModemStatusEntry[] = []): object {
       },
       allowSelfSignedCert: {
         type: "boolean",
-        title: "Allow the router's self-signed HTTPS certificate",
+        title: "Allow the router's self-signed HTTPS certificate (RutOS's default - leave on unless you've replaced it)",
         description:
           "RutOS ships a self-signed certificate out of the box - leave this on unless you've replaced it with one your network trusts. Has no effect over a plain http:// URL.",
         default: defaults.allowSelfSignedCert,
@@ -153,7 +153,7 @@ export function configSchema(modems: ModemStatusEntry[] = []): object {
       },
       refreshModemsOnStart: {
         type: "boolean",
-        title: "Refresh modem list on start",
+        title: "Refresh modem list on start (instead of using the cached list)",
         description:
           'Fetches the modem id list from the router on every plugin start, instead of using the last cached list. Also available via "teltonika-sms-cli modems --refresh".',
         default: defaults.refreshModemsOnStart,
@@ -186,7 +186,7 @@ export function configSchema(modems: ModemStatusEntry[] = []): object {
       },
       notifyOnClear: {
         type: "boolean",
-        title: "Also notify when an alarm clears",
+        title: "Also notify when an alarm clears (even below Minimum priority)",
         description:
           'Sends a text when a notification that previously matched drops back to "normal"/"nominal", even though that state alone is below "Minimum priority".',
         default: defaults.notifyOnClear,
@@ -233,9 +233,9 @@ export function configSchema(modems: ModemStatusEntry[] = []): object {
       },
       sendTestMessage: {
         type: "boolean",
-        title: "Send a confirmation test message",
+        title: "Send a confirmation test message to every recipient on next start",
         description:
-          "Tick and save to send every recipient above a test SMS on next start, proving the router/credentials/modem work end to end. Clears itself once that send succeeds.",
+          "Tick and save to send every recipient above a test SMS on next start, proving the router/credentials/modem work end to end, bypassing the Notification API. Clears itself once that send succeeds.",
         default: defaults.sendTestMessage,
       },
     },

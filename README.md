@@ -1,36 +1,31 @@
 # SignalK SMS Notifications via Teltonika Routers
 
 Relays [SignalK notifications](https://signalk.org/specification/1.8.2/doc/notifications.html)
-(e.g. an anchor watch alert) as SMS via a Teltonika router's
+(e.g. an anchor watch alert) as SMS via a [Teltonika](https://www.teltonika-networks.com) cellular router's
 [RutOS REST API](https://developers.teltonika-networks.com/reference/rut956/7.24.1/v1.16/messages#post-messages-actions-send) -
 useful when the boat has no other way to reach you (no internet, generator/battery notifications while ashore, etc).
 
 ## How it works
 
 - Subscribes to every `notifications.*` path on the vessel.
-- A notification is relayed only on an actual state transition - not on every repeated delta of an already-notified state - and only if it passes the filters below.
+- A notification is relayed only on an actual state transition - not on every repeated delta of an already-notified state - and only if it passes the filters below:
 - **Priority**: only notifications at or above "Minimum priority" (default `alert`) are relayed.
 - **Path patterns**: optional include/exclude regex lists against the notification path with the
-  `notifications.` prefix stripped, e.g. `navigation.anchor.maxRadius`. Leave both empty to match
-  every path ("globally").
+  `notifications.` prefix stripped, e.g. `navigation.anchor.maxRadius`. Leave both empty to match every path ("globally").
 - **Clearing**: with "Also notify when an alarm clears" on (default), a matched notification
-  dropping back to `normal`/`nominal` also sends a text, even though that state alone is below
-  "Minimum priority" - so "anchor alarm cleared" reaches you too.
+  dropping back to `normal`/`nominal` also sends a text, even though that state alone is below "Minimum priority" - so "anchor alarm cleared" reaches you too.
 - **Rate limit**: a sliding window caps SMS volume/cost (default 10 per 60 minutes). A
-  notification at or above "Bypass priority" (default `alarm`) always sends regardless - so an
-  anchor-drag emergency is never silently dropped because earlier chatter used up the quota.
+  notification at or above "Bypass priority" (default `alarm`) always sends regardless - so an anchor-drag emergency is never silently dropped because earlier chatter used up the quota.
 - **Retries**: a failed send is retried (default 3 attempts, 30s apart) before being logged and
   given up on.
-- Recipients are texted **individually and sequentially**, not concurrently, so the rate limit
-  stays accurate and the router's session token isn't raced.
-- On restart, already-active notifications are silently re-learned (not re-texted) - a plugin
-  restart doesn't re-fire an alarm you were already texted about.
+- Recipients are texted **individually and sequentially**, not concurrently, so the rate limit stays accurate and the router's session token isn't raced.
+- On restart, already-active notifications are silently re-learned (not re-texted) - a plugin restart doesn't re-fire an alarm you were already texted about.
 
 ## Setup
 
 ### 1. Create a non-root RutOS user
 
-Root credentials (the `admin` user) work but should be avoided if possible - create a dedicated user or re-use an existing SignalK user:
+Root credentials (the `admin` user) will work but best be avoided if possible - for best security, create a dedicated user or re-use an existing SignalK user and give it only the permissions it needs.
 
 1. RutOS web UI: **System -> Administration -> Users -> Add**.
 2. On that user's **Permissions** tab, confirmed by testing: grant either write access to **All Pages**, or specifically write access to the **Services -> Mobile Utilities -> Messages -> Send**
