@@ -1,4 +1,4 @@
-# @rhizomatics/signalk-teltonika-sms-plugin
+# SignalK SMS Notifications via Teltonika Routers
 
 Relays [SignalK notifications](https://signalk.org/specification/1.8.2/doc/notifications.html)
 (e.g. an anchor watch alert) as SMS via a Teltonika router's
