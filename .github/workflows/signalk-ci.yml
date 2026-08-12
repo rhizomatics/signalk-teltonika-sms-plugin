@@ -12,3 +12,4 @@ jobs:
     with:
       coverage-command: npm run coverage
       format-check-command: npm run fmt:check
+      enable-armv7: false

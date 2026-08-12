@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.2
+
+- Disable armv7 testing, not bwd compat that far back for node
+
 ## 0.2.1
 
 - Minor UI tidy up

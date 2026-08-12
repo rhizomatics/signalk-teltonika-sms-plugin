@@ -68,3 +68,37 @@ Not yet implemented (see `design/intent.md`):
 - Two-way SMS - enquire a SignalK path's value, acknowledge an alarm by replying.
 - Message inbox size / unread count as SignalK data paths.
 - Use as a fail-through step after internet-based notification (4G/Starlink) fails.
+
+## Also for SignalK from Rhizomatics
+
+- [SignalK CLI](https://github.com/rhizomatics/signalk-cli)
+  - Query SignalK History API from command line
+  - Output to console, CSV or Apache Arrow Feather dataframe
+  - Automatic discovery of local SignalK server
+  - Auto aggregation for min/avg/max of any path value
+
+- [Boat Tech Directory](https://github.com/rhizomatics/boat-tech-directory)
+  - Curated list of boat tech projects, products, standards, blogs, news and more
+  - Available as [Boat Tech Directory](http://boat-tech-directory.rhizomatics.org.uk/) web site and in `awesome list` as [Awesome Boat Tech](https://github.com/SY-Sea-Jade/awesome-boat-tech#awesome-boat-tech--)
+
+- [signalk-datalab-plugin](https://github.com/rhizomatics/signalk-datalab-plugin) _ALPHA_
+  - Python data notebooks using Marimo and WASM for easy (and advanced ) data analysis on SignalK data
+  - Example notebook that pulls aggregate data out of the SignalK History API
+
+- [signalk-bluetti-plugin](https://github.com/rhizomatics/signalk-bluetti-plugin)
+  - Read Bluetti power station sensor data for battery level, solar input, inverter etc
+  - Configuration for dozens of models
+  - Some newer models using encrypted data will need a vendor-supplied key
+
+- [signalk-delta-squelch-plugin](https://github.com/rhizomatics/signalk-delta-squelch-plugin)
+  - Minimize noisy SignalK deltas and unnecessary database space/query time for analytics
+  - Apply configurable rounding factor where SignalK precision exceeds the device resolution, e.g. GPS position
+  - Skip updates within a configurable tolerance from last value, with heartbeat to maintain minimal stream
+  - Reject implausible position changes from GPS spikes
+
+- [signalk-einklabel-plugin](https://github.com/rhizomatics/signalk-einklabel-plugin)
+  - Publish SignalK data to cheap eInk electronic shelf labels over BLE
+  - Simple SVG templating, access to data paths plus Resources API
+  - Scheduled based on time or change to a SignalK path
+  - Handles ZhunyCo BLE labels and extensible for other vendors
+  - Also available [signalk-einklabel-genai-plugin](https://github.com/rhizomatics/signalk-einklabel-genai-plugin) to generate ESL labels from a configurable LLM prompt
