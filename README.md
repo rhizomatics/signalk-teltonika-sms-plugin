@@ -25,6 +25,11 @@ useful when the boat has no other way to reach you (no internet, generator/batte
   notification at or above "Bypass priority" (default `alarm`) always sends regardless - so an anchor-drag emergency is never silently dropped because earlier chatter used up the quota.
 - **Retries**: a failed send is retried (default 3 attempts, 30s apart) before being logged and
   given up on.
+- **Message text**: with "Prefix the message with the alarm state" on (default), each text starts
+  with the upper-cased state, e.g. `[ALARM] navigation.anchor.maxRadius: dragging`. Texts longer
+  than "SMS length limit" (default 160 characters) are handled per "Over-length message handling":
+  either truncated with a trailing `...`, or split into multiple texts each suffixed
+  `... {n}/{total}` (e.g. `... 1/4`) so the recipient can tell more parts follow.
 - Recipients are texted **individually and sequentially**, not concurrently, so the rate limit stays accurate and the router's session token isn't raced.
 - On restart, already-active notifications are silently re-learned (not re-texted) - a plugin restart doesn't re-fire an alarm you were already texted about.
 

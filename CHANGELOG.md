@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.0
+
+- Optional prefix of SMS message with alarm level, e.g. CRITICAL
+- Option to either truncate message to SMS max length, or break notification to multiple SMS
+  - Each split SMS has a msg id and total, e.g. `2/4`
+
 ## 0.2.2
 
 - Disable armv7 testing, not bwd compat that far back for node

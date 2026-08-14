@@ -2,6 +2,7 @@ import { ALARM_STATE, ServerAPI } from "@signalk/server-api";
 import { E164_PATTERN } from "./phoneNumber";
 import { modemLabel } from "./modemSelection";
 import { ModemStatusEntry } from "./teltonika/types";
+import { OverLengthBehavior } from "./messageFormat";
 
 export interface RateLimitConfig {
   maxMessages: number;
@@ -31,6 +32,12 @@ export interface PluginConfig {
   includePatterns: string[];
   excludePatterns: string[];
   notifyOnClear: boolean;
+  /** Prepends the notification's alarm state, upper-cased (e.g. "[ALARM]"), to the message text - see `formatNotificationText` in `messageFormat.ts`. */
+  includeStatePrefix: boolean;
+  /** SMS messages have a hard length limit - texts longer than this are handled per `overLengthBehavior` below. See `applyLengthLimit` in `messageFormat.ts`. */
+  smsMaxLength: number;
+  /** "truncate" cuts an over-length message to one text; "split" sends it as multiple texts, each suffixed " ... {n}/{total}". */
+  overLengthBehavior: OverLengthBehavior;
   retryCount: number;
   retryPauseSeconds: number;
   rateLimit: RateLimitConfig;
@@ -57,6 +64,9 @@ export function defaultConfig(): PluginConfig {
     includePatterns: [],
     excludePatterns: [],
     notifyOnClear: true,
+    includeStatePrefix: true,
+    smsMaxLength: 160,
+    overLengthBehavior: "split",
     retryCount: 3,
     retryPauseSeconds: 30,
     rateLimit: {
@@ -190,6 +200,29 @@ export function configSchema(modems: ModemStatusEntry[] = []): object {
         description:
           'Sends a text when a notification that previously matched drops back to "normal"/"nominal", even though that state alone is below "Minimum priority".',
         default: defaults.notifyOnClear,
+      },
+      includeStatePrefix: {
+        type: "boolean",
+        title: 'Prefix the message with the alarm state, upper-cased (e.g. "[ALARM]")',
+        default: defaults.includeStatePrefix,
+      },
+      smsMaxLength: {
+        type: "number",
+        title: "SMS length limit (characters)",
+        description:
+          'A single GSM SMS holds 160 characters - messages longer than this are handled per "Over-length message handling" below.',
+        minimum: 20,
+        default: defaults.smsMaxLength,
+      },
+      overLengthBehavior: {
+        type: "string",
+        title: "Over-length message handling",
+        description:
+          '"Truncate" cuts the message to fit one text, ending it with "...". "Split" sends it as multiple texts, each suffixed ' +
+          '" ... {n}/{total}" (e.g. "... 1/4") so the recipient can tell more parts follow.',
+        enum: ["truncate", "split"],
+        enumNames: ["Truncate", "Split into multiple messages"],
+        default: defaults.overLengthBehavior,
       },
       retryCount: {
         type: "number",

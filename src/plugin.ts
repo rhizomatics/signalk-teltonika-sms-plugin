@@ -6,6 +6,7 @@ import { SmsSender } from "./smsSender";
 import { NotificationTracker } from "./notificationTracker";
 import { loadCachedModemStatus, saveCachedModemStatus } from "./modemCache";
 import { chooseDefaultModemId } from "./modemSelection";
+import { applyLengthLimit, formatNotificationText } from "./messageFormat";
 
 const NOTIFICATIONS_PREFIX = "notifications.";
 
@@ -93,8 +94,12 @@ export function createPlugin(app: ServerAPI): Plugin {
         notifyOnClear: pluginConfig.notifyOnClear,
       });
       if (!shouldNotify) return;
-      const text = `[${state}] ${path}: ${delta.value.message ?? ""}`.trim();
-      void sender.enqueue({ priority: state, text, label: path });
+      const fullText = formatNotificationText(state, path, delta.value.message ?? "", pluginConfig.includeStatePrefix);
+      const parts = applyLengthLimit(fullText, pluginConfig.smsMaxLength, pluginConfig.overLengthBehavior);
+      parts.forEach((text, index) => {
+        const label = parts.length > 1 ? `${path} (part ${index + 1}/${parts.length})` : path;
+        void sender.enqueue({ priority: state, text, label });
+      });
     });
 
     app.setPluginStatus(`Relaying notifications to ${pluginConfig.recipients.length} recipient(s) via modem "${modemId}"`);
