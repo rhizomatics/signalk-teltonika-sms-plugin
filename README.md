@@ -1,5 +1,12 @@
 # SignalK SMS Notifications via Teltonika Routers
 
+[![npm version](https://img.shields.io/npm/v/@rhizomatics/signalk-teltonika-sms-plugin.svg)](https://www.npmjs.com/package/@rhizomatics/signalk-teltonika-sms-plugin)
+[![npm downloads](https://img.shields.io/npm/dm/@rhizomatics/signalk-teltonika-sms-plugin.svg)](https://www.npmjs.com/package/@rhizomatics/signalk-teltonika-sms-plugin)
+[![SignalK Plugin CI](https://github.com/rhizomatics/signalk-teltonika-sms-plugin/actions/workflows/signalk-ci.yml/badge.svg)](https://github.com/rhizomatics/signalk-teltonika-sms-plugin/actions/workflows/signalk-ci.yml)
+![code style: oxfmt](https://img.shields.io/badge/code_style-oxfmt-blue.svg)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://github.com/rhizomatics/signalk-teltonika-sms-plugin/blob/main/LICENSE)
+[![boat tech directory](https://boat-tech-directory.rhizomatics.org.uk/images/badge.svg)](https://boat-tech-directory.rhizomatics.org.uk)
+
 Relays [SignalK notifications](https://signalk.org/specification/1.8.2/doc/notifications.html)
 (e.g. an anchor watch alert) as SMS via a [Teltonika](https://www.teltonika-networks.com) cellular router's
 [RutOS REST API](https://developers.teltonika-networks.com/reference/rut956/7.24.1/v1.16/messages#post-messages-actions-send) -
