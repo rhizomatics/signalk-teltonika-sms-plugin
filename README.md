@@ -12,6 +12,8 @@ Relays [SignalK notifications](https://signalk.org/specification/1.8.2/doc/notif
 [RutOS REST API](https://developers.teltonika-networks.com/reference/rut956/7.24.1/v1.16/messages#post-messages-actions-send) -
 useful when the boat has no other way to reach you (no internet, generator/battery notifications while ashore, etc).
 
+Messages can be prefixed with the alarm state, e.g. `CRITICAL`, and optionally broken up into multiple messages where longer than SMS limitations.
+
 ## How it works
 
 - Subscribes to every `notifications.*` path on the vessel.
