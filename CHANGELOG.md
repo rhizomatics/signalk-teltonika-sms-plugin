@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.1
+
+- Disabling the plugin while it waits on the router no longer leaves it relaying notifications until the server restarts
+- Starts on SignalK servers older than 2.28.0, as `engines` allows (no notification seeding there)
+- A failure while starting is shown as the plugin's error status instead of being lost
+
 ## 0.3.0
 
 - Optional prefix of SMS message with alarm level, e.g. CRITICAL

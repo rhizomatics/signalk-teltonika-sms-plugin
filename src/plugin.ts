@@ -22,6 +22,9 @@ export function createPlugin(app: ServerAPI): Plugin {
   let cachedModemStatus = loadCachedModemStatus(app);
   let unsubscribe: (() => void) | undefined;
   let activeSender: SmsSender | undefined;
+  // Bumped by every start() and stop(), so a beginRelay() still waiting on the router when the
+  // plugin is stopped or restarted knows it's stale and doesn't subscribe.
+  let generation = 0;
 
   /**
    * Fetches modem status (only when needed - see `needsFetch` below, so "Refresh modem list on
@@ -53,8 +56,12 @@ export function createPlugin(app: ServerAPI): Plugin {
     return picked;
   }
 
-  async function beginRelay(client: TeltonikaClient, pluginConfig: PluginConfig): Promise<void> {
+  async function beginRelay(client: TeltonikaClient, pluginConfig: PluginConfig, startedAs: number): Promise<void> {
     const modemId = await resolveModemId(client, pluginConfig);
+    if (startedAs !== generation) {
+      app.debug("stopped while fetching modem status - not relaying");
+      return;
+    }
 
     const rateLimiter = new RateLimiter(pluginConfig.rateLimit);
     const sender = new SmsSender(
@@ -77,7 +84,10 @@ export function createPlugin(app: ServerAPI): Plugin {
 
     // Seed from current notification state without sending anything - a plugin restart
     // shouldn't re-text for an alarm that's still active and was already texted about.
-    for (const { context, path, value } of Object.values(app.notifications.list())) {
+    // `app.notifications` is only there from server 2.28.0. On older servers there's nothing to
+    // seed from, so an alarm still active across a restart may be texted again.
+    const current: ReturnType<ServerAPI["notifications"]["list"]> = app.notifications?.list() ?? {};
+    for (const { context, path, value } of Object.values(current)) {
       if (context !== app.selfContext || !isNotificationValue(value)) continue;
       tracker.seed(stripNotificationsPrefix(path), value.state);
     }
@@ -138,10 +148,14 @@ export function createPlugin(app: ServerAPI): Plugin {
         password: pluginConfig.password,
         allowSelfSignedCert: pluginConfig.allowSelfSignedCert,
       });
-      void beginRelay(client, pluginConfig);
+      generation += 1;
+      beginRelay(client, pluginConfig, generation).catch((err: unknown) => {
+        app.setPluginError(`failed to start: ${(err as Error).message}`);
+      });
     },
 
     stop() {
+      generation += 1;
       unsubscribe?.();
       unsubscribe = undefined;
       activeSender?.stop();
