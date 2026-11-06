@@ -9,8 +9,7 @@
 
 Relays [SignalK notifications](https://signalk.org/specification/1.8.2/doc/notifications.html)
 (e.g. an anchor watch alert) as SMS via a [Teltonika](https://www.teltonika-networks.com) cellular router's
-[RutOS REST API](https://developers.teltonika-networks.com/reference/rut956/7.24.1/v1.16/messages#post-messages-actions-send) -
-useful when the boat has no other way to reach you (no internet, generator/battery notifications while ashore, etc).
+[RutOS REST API](https://developers.teltonika-networks.com/reference/rut956/7.24.1/v1.16/messages#post-messages-actions-send) - useful when the boat has no other way to reach you (no internet, generator/battery notifications while ashore, etc).
 
 Messages can be prefixed with the alarm state, e.g. `CRITICAL`, and optionally broken up into multiple messages where longer than SMS limitations.
 
@@ -19,17 +18,12 @@ Messages can be prefixed with the alarm state, e.g. `CRITICAL`, and optionally b
 - Subscribes to every `notifications.*` path on the vessel.
 - A notification is relayed only on an actual state transition - not on every repeated delta of an already-notified state - and only if it passes the filters below:
 - **Priority**: only notifications at or above "Minimum priority" (default `alert`) are relayed.
-- **Path patterns**: optional include/exclude regex lists against the notification path with the
-  `notifications.` prefix stripped, e.g. `navigation.anchor.maxRadius`. Leave both empty to match every path ("globally").
-- **Clearing**: with "Also notify when an alarm clears" on (default), a matched notification
-  dropping back to `normal`/`nominal` also sends a text, even though that state alone is below "Minimum priority" - so "anchor alarm cleared" reaches you too.
+- **Path patterns**: optional include/exclude regex lists against the notification path with the `notifications.` prefix stripped, e.g. `navigation.anchor.maxRadius`. Leave both empty to match every path ("globally").
+- **Clearing**: with "Also notify when an alarm clears" on (default), a matched notification dropping back to `normal`/`nominal` also sends a text, even though that state alone is below "Minimum priority" - so "anchor alarm cleared" reaches you too.
 - **Rate limit**: a sliding window caps SMS volume/cost (default 10 per 60 minutes). A
   notification at or above "Bypass priority" (default `alarm`) always sends regardless - so an anchor-drag emergency is never silently dropped because earlier chatter used up the quota.
-- **Retries**: a failed send is retried (default 3 attempts, 30s apart) before being logged and
-  given up on.
-- **Message text**: with "Prefix the message with the alarm state" on (default), each text starts
-  with the upper-cased state, e.g. `[ALARM] navigation.anchor.maxRadius: dragging`. Texts longer
-  than "SMS length limit" (default 160 characters) are handled per "Over-length message handling":
+- **Retries**: a failed send is retried (default 3 attempts, 30s apart) before being logged and given up on.
+- **Message text**: with "Prefix the message with the alarm state" on (default), each text starts with the upper-cased state, e.g. `[ALARM] navigation.anchor.maxRadius: dragging`. Texts longer than "SMS length limit" (default 160 characters) are handled per "Over-length message handling":
   either truncated with a trailing `...`, or split into multiple texts each suffixed
   `... {n}/{total}` (e.g. `... 1/4`) so the recipient can tell more parts follow.
 - Recipients are texted **individually and sequentially**, not concurrently, so the rate limit stays accurate and the router's session token isn't raced.

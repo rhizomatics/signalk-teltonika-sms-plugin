@@ -1,0 +1,4 @@
+[tools]
+node = "lts"
+oxfmt = "latest"
+oxlint = "latest"

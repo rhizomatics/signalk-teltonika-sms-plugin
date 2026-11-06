@@ -1,6 +1,6 @@
 {
   "name": "@rhizomatics/signalk-teltonika-sms-plugin",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Deliver SignalK notifications as SMS via a Teltonika router's RutOS API, e.g. an anchor watch alert.",
   "keywords": [
     "RutOS",
@@ -51,8 +51,8 @@
   "devDependencies": {
     "@signalk/server-api": "^2.28.0",
     "@types/node": "^26.2.0",
-    "oxfmt": "^0.74.0",
-    "oxlint": "^1.74.0",
+    "oxfmt": "^0.76.0",
+    "oxlint": "^1.91.0",
     "oxlint-tsgolint": "^7.0.0",
     "tsx": "^4.23.0",
     "typescript": "^7.0.2"
