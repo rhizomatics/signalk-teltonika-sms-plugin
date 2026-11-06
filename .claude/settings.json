@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:developers.teltonika-networks.com)",
+      "WebFetch(domain:community.teltonika.lt)",
+      "Bash(npm ls *)",
+      "Bash(python3 -c \"import json,sys; v=json.load\\(sys.stdin\\); print\\('\\\\n'.join\\(v[-15:]\\)\\)\")",
+      "Bash(python3 -c ' *)",
+      "Bash(find / -maxdepth 4 -iname \"signalk-server\" -type d)",
+      "Bash(find / -maxdepth 6 -path \"*node_modules/signalk-server/package.json\")"
+    ]
+  }
+}
