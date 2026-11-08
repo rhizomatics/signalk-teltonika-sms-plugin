@@ -1,4 +1,5 @@
 [tools]
+prek = "latest"
 node = "lts"
 oxfmt = "latest"
 oxlint = "latest"
