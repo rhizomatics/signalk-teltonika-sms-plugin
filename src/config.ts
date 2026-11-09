@@ -1,4 +1,5 @@
-import { ALARM_STATE, ServerAPI } from "@signalk/server-api";
+import type { ServerAPI } from "@signalk/server-api";
+import { ALARM_STATE } from "./alarmState";
 import { E164_PATTERN } from "./phoneNumber";
 import { modemLabel } from "./modemSelection";
 import { ModemStatusEntry } from "./teltonika/types";

@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from "fs";
 import { join } from "path";
-import { ServerAPI } from "@signalk/server-api";
+import type { ServerAPI } from "@signalk/server-api";
 import { ModemStatusEntry } from "./teltonika/types";
 
 /**

@@ -5,5 +5,5 @@ minimum_release_age = "7d"
 [tools]
 prek = "latest"
 node = "lts"
-oxfmt = "latest"
-oxlint = "latest"
+"npm:oxfmt" = "latest"
+"npm:oxlint" = "latest"

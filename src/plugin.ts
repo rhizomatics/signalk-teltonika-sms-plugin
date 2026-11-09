@@ -1,4 +1,5 @@
-import { ALARM_STATE, Path, Plugin, ServerAPI } from "@signalk/server-api";
+import type { Path, Plugin, ServerAPI } from "@signalk/server-api";
+import { ALARM_STATE } from "./alarmState";
 import { clearSendTestMessage, configSchema, configUiSchema, defaultConfig, persistModemId, PluginConfig } from "./config";
 import { TeltonikaClient } from "./teltonika/client";
 import { RateLimiter } from "./rateLimiter";
