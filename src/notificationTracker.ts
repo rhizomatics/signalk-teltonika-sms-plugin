@@ -1,4 +1,4 @@
-import { ALARM_STATE } from "@signalk/server-api";
+import { ALARM_STATE } from "./alarmState";
 import { matchesFilter, NotificationFilterConfig } from "./filter";
 
 export interface NotificationDecisionConfig extends NotificationFilterConfig {

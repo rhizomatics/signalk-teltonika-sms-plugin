@@ -1,4 +1,4 @@
-import { ALARM_STATE } from "@signalk/server-api";
+import { ALARM_STATE } from "./alarmState";
 
 /** ALARM_STATE's severity ladder, lowest first - used to compare a notification's state against `minPriority`. */
 const PRIORITY_ORDER: ALARM_STATE[] = [

@@ -1,4 +1,4 @@
-import { Plugin, ServerAPI } from "@signalk/server-api";
+import type { Plugin, ServerAPI } from "@signalk/server-api";
 import { createPlugin } from "./plugin";
 
 function plugin(app: ServerAPI): Plugin {

@@ -1,4 +1,4 @@
-import { ALARM_STATE } from "@signalk/server-api";
+import { ALARM_STATE } from "./alarmState";
 import { RateLimiter } from "./rateLimiter";
 import { TeltonikaClient } from "./teltonika/client";
 import { TeltonikaApiError } from "./teltonika/types";

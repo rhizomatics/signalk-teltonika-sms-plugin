@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.2
+
+- Fix startup failure `Cannot find module '@signalk/server-api'` when installed on a SignalK server
+
 ## 0.3.1
 
 - Disabling the plugin while it waits on the router no longer leaves it relaying notifications until the server restarts
