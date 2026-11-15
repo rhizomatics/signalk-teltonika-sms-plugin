@@ -1,6 +1,6 @@
 # SignalK Teltonika SMS Plugin
 
-## Intent
+## Intent
 
 Deliver SignalK notifications via a Teltonika router using the RutOS API for example to receive an anchor watch alert.
 
@@ -28,7 +28,7 @@ Failed SMS will be retried for a configurable number of times after a configurab
 - Root usage is discouraged - the plugin documentation explains how to create a non-root user in the RutOS UI. Confirmed by testing: the user needs either write access to all pages, or specifically write access to the `Services / Mobile Utilities / Messages / Send` and `Services / Mobile Utilities / Messages / Storage` permission pages (set on the user's Permissions tab in the RutOS UI) - no separate API-level ACL call is needed
 - App Icon created, stylized SMS chat bubble
 
-## Roadmap
+## Roadmap
 
 Potential additions:
 
